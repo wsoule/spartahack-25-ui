@@ -31,6 +31,7 @@ final class Establishment {
         self.desc = desc
         self.type = type
     }
+    
 }
 
 enum TypeEstablishment: String, Codable, CaseIterable {
