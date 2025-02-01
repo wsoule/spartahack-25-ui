@@ -8,15 +8,24 @@ import SwiftUI
 import SwiftData
 
 struct EstablishmentView: View {
-    @Query(sort: \Establishment.name) private var establishments: [Establishment]
+    @Query private var establishments: [Establishment]
     @Environment(\.modelContext) private var modelContext
-    
+
+    init(sort: SortDescriptor<Establishment>, searchString: String) {
+        _establishments = Query(filter: #Predicate { establishment in
+            if searchString.isEmpty {
+                return true
+            } else {
+                return establishment.name.localizedStandardContains(searchString)
+            }
+        }, sort: [sort])
+    }
+
     var body: some View {
         List {
             ForEach(establishments) { establishment in
                 NavigationLink(value: establishment) {
                     HStack {
-                        // Left Side: Name, Description, and Tags
                         VStack(alignment: .leading, spacing: 5) {
                             Text(establishment.name)
                                 .font(.headline)
@@ -25,7 +34,6 @@ struct EstablishmentView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                             
-                            // Tags as a horizontally scrollable bar
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
                                     ForEach(establishment.tags, id: \.self) { tag in
@@ -40,10 +48,7 @@ struct EstablishmentView: View {
                                 }
                             }
                         }
-                        
                         Spacer()
-                        
-                        // Right Side: Hours
                         VStack(alignment: .trailing) {
                             ForEach(establishment.hours) { hour in
                                 Text("\(hour.day.rawValue): \(hour.openTime) - \(hour.closeTime)")
@@ -57,8 +62,4 @@ struct EstablishmentView: View {
             }
         }
     }
-}
-
-#Preview {
-    EstablishmentView()
 }

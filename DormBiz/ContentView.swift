@@ -80,13 +80,19 @@ import SwiftData
 
 struct ContentView: View {
     @State private var path = [Establishment]()  // Navigation path tracking
+    @State private var sortOrder = SortDescriptor(\Establishment.name)
+    @State private var searchText: String = ""
+
+
+
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         NavigationStack (path: $path) {
-            EstablishmentView()
+            EstablishmentView(sort: sortOrder, searchString: searchText)
             .navigationTitle("DormBiz")
-            .navigationDestination(for: Establishment.self, destination: EditSessionView.init)
+            .navigationDestination(for: Establishment.self, destination: EditEstablishmentView.init)
+            .searchable(text: $searchText)
             .toolbar{
                 Button("Add session", systemImage: "plus", action: addSession)
                 Menu("Sort", systemImage: "arrow.up.arrow.down") {
@@ -101,7 +107,6 @@ struct ContentView: View {
             }
         }
     }
-
 
     /// Creates a new session and navigates to the EditSessionView
     private func addSession() {

@@ -26,5 +26,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:541071685922:ios:1747693dcf5bfde10a0d7b</string>
+	<key>DATABASE_URL</key>
+	<string>https://dormbiz-5a339-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>
