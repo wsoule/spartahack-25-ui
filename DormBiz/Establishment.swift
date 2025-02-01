@@ -17,8 +17,10 @@ final class Establishment {
     var uni: String
     var location: Location
     var hours: [Hour]
+    var desc: String
+    var type: TypeEstablishment
 
-    init(name: String, owners: [User], products: [Product], tags: [String], uni: String, location: Location, hours: [Hour] = []) {
+    init(name: String, owners: [User], products: [Product], tags: [String], uni: String, location: Location, hours: [Hour] = [], desc: String, type: TypeEstablishment) {
         self.name = name
         self.owners = owners
         self.products = products
@@ -26,5 +28,14 @@ final class Establishment {
         self.uni = uni
         self.location = location
         self.hours = hours
+        self.desc = desc
+        self.type = type
     }
+}
+
+enum TypeEstablishment: String, Codable, CaseIterable {
+    case merchant = "Merchant"
+    case service = "Service"
+    case food = "Food"
+    case other = "Other"
 }
