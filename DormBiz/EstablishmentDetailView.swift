@@ -44,7 +44,7 @@ struct EstablishmentDetailView: View {
                             .fontWeight(.semibold)
                     }
                     
-                    Text(establishment.descrip)
+                    Text(establishment.desc)
                         .font(.body)
                     
                     Text("Owners")
@@ -101,8 +101,9 @@ struct EstablishmentDetailView: View {
         tags: ["Coffee", "Merchant"],
         uni: "Michigan State University",
         location: Location(latitude: 50, longitude: 50),
-        hours: [Hour(day: "Monday", openTime: "8:00 AM", closeTime: "6:00 PM")],
-        description: "A local favorite for coffee lovers!"
+        hours: [Hour(day: .monday, openTime: "8:00 AM", closeTime: "6:00 PM")],
+        desc: "A local favorite for coffee lovers!",
+        type: .food
     ))
 }
 
