@@ -12,7 +12,7 @@ struct Todo: Identifiable, Codable {
 }
 
 struct ContentView: View {
-    @State private var path = [Establishment]()  // Navigation path tracking
+    @State private var path = [Route]()  // Navigation path tracking using Route
     @State private var sortOrder = SortDescriptor(\Establishment.name)
     @State private var searchText: String = ""
     @State private var newTag: String = ""
@@ -29,10 +29,6 @@ struct ContentView: View {
                 // Pass your fetched establishments to the EstablishmentView.
                 EstablishmentView(establishments: viewModel.establishments)
                     .navigationTitle("DormBiz")
-                    // This tells NavigationStack what view to show when an Establishment is tapped.
-                    .navigationDestination(for: Establishment.self) { establishment in
-                        EstablishmentDetailView(establishment: establishment)
-                    }
                     .toolbar {
                         Button(action: addSession) {
                             Label("Add session", systemImage: "plus")
@@ -48,8 +44,21 @@ struct ContentView: View {
                     }
             }
             .onAppear {
-                viewModel.fetchEstablishments()
+                Task {
+                    await viewModel.syncFromCloud()
+                }
             }
+            // NavigationDestination for the Route enum.
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .detail(let establishment):
+                    EstablishmentDetailView(establishment: establishment)
+                case .edit(let establishment):
+                    EditEstablishmentView(establishment: establishment)
+                }
+            }
+
+
         }
     }
 
@@ -69,12 +78,10 @@ struct ContentView: View {
             type: .food
         )
 
-        viewModel.addEstablishment(newEstablishment)
+        viewModel.saveEstablishment(newEstablishment)
     }
     
     private func addSession() {
-        let hour1 = Hour(day: .monday, openTime: "08:00 AM", closeTime: "05:00 PM")
-        let hour2 = Hour(day: .tuesday, openTime: "08:00 AM", closeTime: "05:00 PM")
         
         let newEstablishment = Establishment(
             name: "",
@@ -83,12 +90,12 @@ struct ContentView: View {
             tags: tags,  // Use the tags array here
             uni: "",
             location: Location(latitude: 0, longitude: 0),
-            hours: [hour1, hour2],
+            hours: [],
             description: "",
-            type: .food
+            type: .merchant
         )
-        // Push the new establishment onto the navigation path.
-        path = [newEstablishment]
+        // Push the new establishment as a Route.edit value onto the navigation path.
+        path = [.edit(newEstablishment)]
     }
 }
 
@@ -96,3 +103,28 @@ struct ContentView: View {
     ContentView()
         .environmentObject(EstablishmentViewModel())
 }
+
+enum Route: Hashable {
+    case detail(Establishment)
+    case edit(Establishment)
+
+    static func == (lhs: Route, rhs: Route) -> Bool {
+        switch (lhs, rhs) {
+        case (.detail(let left), .detail(let right)):
+            return left.id == right.id
+        case (.edit(let left), .edit(let right)):
+            return left.id == right.id
+        default:
+            return false
+        }
+    }
+
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .detail(let establishment), .edit(let establishment):
+            hasher.combine(establishment.id)
+        }
+    }
+}
+
+

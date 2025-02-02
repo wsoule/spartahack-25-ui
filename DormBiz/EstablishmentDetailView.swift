@@ -14,7 +14,7 @@ struct EstablishmentDetailView: View {
                     Image(systemName: "building.fill") // default image
                         .font(.title)
                         .foregroundColor(.blue)
-                    Text("hello")
+                    Text(establishment.name)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                 }
@@ -44,7 +44,7 @@ struct EstablishmentDetailView: View {
                             .fontWeight(.semibold)
                     }
                     
-                    Text(establishment.description)
+                    Text(establishment.desc)
                         .font(.body)
                     
                     Text("Owners")

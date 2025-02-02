@@ -1,35 +1,40 @@
-//
-//  EstablishmentViewModel.swift
-//  DormBiz
-//
-//  Created by Wyat Soule on 2/1/25.
-//
-
 import SwiftUI
-import FirebaseFirestore
+import Combine
 
-class EstablishmentViewModel: ObservableObject {
+final class EstablishmentViewModel: ObservableObject {
     @Published var establishments: [Establishment] = []
-    private var db = Firestore.firestore()
+    private let firebaseService = FirebaseService()
     
-    func fetchEstablishments() {
-        db.collection("establishments").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-                return
+    // Assume you inject your SwiftData modelContext somehow (e.g., via environment)
+    @Environment(\.modelContext) private var modelContext
+
+    // Fetch from Firestore and update local SwiftData storage
+    func syncFromCloud() async {
+        do {
+            let remoteEstablishments = try await firebaseService.fetchEstablishments()
+            DispatchQueue.main.async {
+                // Update your local establishments list (and optionally, your local SwiftData store)
+                self.establishments = remoteEstablishments
+                // You could also insert these into the SwiftData context if desired.
             }
-            
-            self.establishments = querySnapshot?.documents.compactMap { document in
-                try? document.data(as: Establishment.self)
-            } ?? []
+        } catch {
+            print("Error fetching from Firestore: \(error)")
         }
     }
     
-    func addEstablishment(_ establishment: Establishment) {
-        do {
-            let _ = try db.collection("establishments").addDocument(from: establishment)
-        } catch {
-            print("Error adding establishment: \(error.localizedDescription)")
+    // Save a local establishment to both SwiftData and Firestore
+    func saveEstablishment(_ establishment: Establishment) {
+        // First, update SwiftData locally
+        // (For example, use modelContext.insert if it's new, or simply assume the SwiftData store is already updated.)
+        
+        // Then push to Firestore asynchronously.
+        Task {
+            do {
+                try await firebaseService.saveEstablishment(establishment)
+                print("Saved to Firestore successfully.")
+            } catch {
+                print("Error saving establishment: \(error)")
+            }
         }
     }
 }

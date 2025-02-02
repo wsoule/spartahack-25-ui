@@ -5,7 +5,8 @@ struct EditEstablishmentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State var establishment: Establishment
+    // Accept the establishment as an ObservedObject
+    @ObservedObject var establishment: Establishment
 
     @State private var selectedType: TypeEstablishment = .food
     @State private var selectedUniversity: String = "MSU"
@@ -15,17 +16,35 @@ struct EditEstablishmentView: View {
     // Use an existing view model provided by the environment.
     @EnvironmentObject var viewModel: EstablishmentViewModel
 
+    // Computed binding that updates the properties instead of replacing the object.
+    private var establishmentBinding: Binding<Establishment> {
+        Binding<Establishment>(
+            get: { self.establishment },
+            set: { newValue in
+                self.establishment.name = newValue.name
+                self.establishment.owners = newValue.owners
+                self.establishment.products = newValue.products
+                self.establishment.tags = newValue.tags
+                self.establishment.uni = newValue.uni
+                self.establishment.location = newValue.location
+                self.establishment.hours = newValue.hours
+                self.establishment.desc = newValue.desc
+                self.establishment.type = newValue.type
+            }
+        )
+    }
+
     var body: some View {
         Form {
-            DetailsSection(establishment: $establishment, selectedType: $selectedType)
+            DetailsSection(establishment: establishmentBinding, selectedType: $selectedType)
             OperatingHoursSection(
-                establishment: $establishment,
+                establishment: establishmentBinding,
                 showingTimePopup: $showingTimePopup,
                 deleteHour: deleteHour,
                 deleteHours: deleteHours
             )
             TagsSection(
-                establishment: $establishment,
+                establishment: establishmentBinding,
                 newTag: $newTag,
                 removeTag: removeTag
             )
@@ -45,16 +64,15 @@ struct EditEstablishmentView: View {
         }
         .navigationTitle("New Establishment")
         .sheet(isPresented: $showingTimePopup) {
-            AddTimePopupView(isPresented: $showingTimePopup, establishment: $establishment)
+            AddTimePopupView(isPresented: $showingTimePopup, establishment: establishmentBinding)
         }
     }
     
     private func saveEstablishment() {
-        viewModel.addEstablishment(establishment)
+        viewModel.saveEstablishment(establishment)
         dismiss()
     }
     
-//    // MARK: - Delete Hour Methods
 //    private func deleteHour(_ hour: Hour) {
 //        if let index = establishment.hours.firstIndex(where: { $0.day == hour.day }) {
 //            establishment.hours.remove(at: index)
@@ -65,7 +83,6 @@ struct EditEstablishmentView: View {
 //        establishment.hours.remove(atOffsets: offsets)
 //    }
 //    
-//    // MARK: - Remove Tag Method
 //    private func removeTag(_ tag: String) {
 //        establishment.tags.removeAll { $0 == tag }
 //    }

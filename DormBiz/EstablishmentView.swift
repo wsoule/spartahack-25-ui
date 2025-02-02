@@ -13,13 +13,13 @@ struct EstablishmentView: View {
     var body: some View {
         List {
             ForEach(establishments) { establishment in
-                NavigationLink(value: establishment) {
+                NavigationLink(value: Route.detail(establishment)) {
                     HStack {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(establishment.name)
                                 .font(.headline)
 
-                            Text(establishment.description)
+                            Text(establishment.desc)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
 
