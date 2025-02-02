@@ -26,7 +26,7 @@ struct MapView: View {
     @State private var tags: [String] = []
 
     var places: [Place] {
-        return viewModel.establishments.map { Place(name: $0.location.name, coordinate: CLLocationCoordinate2D(latitude: $0.location.latitude, longitude: $0.location.longitude))}
+        return viewModel.establishments.map { Place(name: $0.name, coordinate: CLLocationCoordinate2D(latitude: $0.location.latitude, longitude: $0.location.longitude))}
     }
 
     var body: some View {
@@ -66,7 +66,7 @@ struct PlaceAnnotationView: View {
             Text(title)
                 .font(.callout)
                 .padding(5)
-                .background(Color.white)
+                .background(Color.blue)
                 .cornerRadius(10)
                 .shadow(radius: 3)
 
