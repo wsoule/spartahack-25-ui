@@ -19,7 +19,7 @@ struct EstablishmentDetailView: View {
                         .fontWeight(.bold)
                 }
 
-                Text("Located at: \(establishment.location)")
+                Text("Located at: \(establishment.location.name)")
                     .font(.headline)
                     .foregroundColor(.secondary)
 
@@ -100,7 +100,7 @@ struct EstablishmentDetailView: View {
         products: [Product(name: "Coffee", cost: 3.99, description: "Hello")  ],
         tags: ["Coffee", "Merchant"],
         uni: "MSU",
-        location: Location(latitude: 50, longitude: 50),
+        location: Location(latitude: 50, longitude: 50, name: "test"),
         hours: [Hour(day: .monday, openTime: "8:00 AM", closeTime: "6:00 PM")],
         description: "A local favorite for coffee lovers!",
         type: .food

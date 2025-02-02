@@ -77,7 +77,7 @@ struct ContentView: View {
             products: [],
             tags: tags,  // Use the tags array here
             uni: "",
-            location: Location(latitude: 0, longitude: 0),
+            location: Location(latitude: 0, longitude: 0, name: ""),
             hours: [hour1, hour2],
             description: "",
             type: .food
@@ -94,7 +94,7 @@ struct ContentView: View {
             products: [],
             tags: tags,  // Use the tags array here
             uni: "",
-            location: Location(latitude: 0, longitude: 0),
+            location: Location(latitude: 0, longitude: 0, name: ""),
             hours: [],
             description: "",
             type: .merchant

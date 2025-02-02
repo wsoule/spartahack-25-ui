@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreLocation
+import MapKit
 
 struct EditEstablishmentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -12,6 +13,10 @@ struct EditEstablishmentView: View {
     @State private var selectedUniversity: String = "MSU"
     @State private var newTag: String = ""
     @State private var showingTimePopup = false
+
+    // New state for map search.
+    @State private var mapSearchQuery: String = ""
+    @State private var searchResults: [MKMapItem] = []
 
     // Use an existing view model provided by the environment.
     @EnvironmentObject var viewModel: EstablishmentViewModel
@@ -50,6 +55,35 @@ struct EditEstablishmentView: View {
             )
             UniversitySection(selectedUniversity: $selectedUniversity)
             
+            // Section for Apple Maps search.
+            Section(header: Text("Location Search")) {
+                TextField("Search location...", text: $mapSearchQuery, onCommit: {
+                    performMapSearch()
+                })
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                // Display search results.
+                ForEach(searchResults, id: \.self) { mapItem in
+                    Button(action: {
+                        // Update establishment.location with the selected result.
+                        let coordinate = mapItem.placemark.coordinate
+                        establishment.location = Location( latitude: coordinate.latitude, longitude: coordinate.longitude, name: mapItem.name ?? "unknown")
+                        // Optionally clear search results.
+                        searchResults = []
+                        mapSearchQuery = mapItem.name ?? ""
+                    }) {
+                        HStack {
+                            Text(mapItem.name ?? "Unknown")
+                            if let title = mapItem.placemark.title {
+                                Text("- \(title)")
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                }
+            }
+            
             // Save button at the bottom
             Section {
                 Button(action: saveEstablishment) {
@@ -69,23 +103,29 @@ struct EditEstablishmentView: View {
     }
     
     private func saveEstablishment() {
+        // Ensure the selected university is saved.
         establishment.uni = selectedUniversity
         viewModel.saveEstablishment(establishment)
         dismiss()
     }
+    
 
     
-//    private func deleteHour(_ hour: Hour) {
-//        if let index = establishment.hours.firstIndex(where: { $0.day == hour.day }) {
-//            establishment.hours.remove(at: index)
-//        }
-//    }
-//
-//    private func deleteHours(at offsets: IndexSet) {
-//        establishment.hours.remove(atOffsets: offsets)
-//    }
-//    
-//    private func removeTag(_ tag: String) {
-//        establishment.tags.removeAll { $0 == tag }
-//    }
+    // Use MKLocalSearch to perform the Apple Maps search.
+    private func performMapSearch() {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = mapSearchQuery
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            if let error = error {
+                print("Error searching Apple Maps: \(error)")
+                return
+            }
+            if let mapItems = response?.mapItems {
+                DispatchQueue.main.async {
+                    self.searchResults = mapItems
+                }
+            }
+        }
+    }
 }

@@ -25,4 +25,5 @@ import FirebaseFirestore
 struct Location: Codable {
     var latitude: Double
     var longitude: Double
+    var name: String
 }
