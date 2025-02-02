@@ -99,7 +99,7 @@ struct EstablishmentDetailView: View {
         owners: [User(name: "Chad Hildwein", phoneNumber: "+12317500042", email: "chad@example.com")],
         products: [Product(name: "Coffee", cost: 3.99, description: "Hello")  ],
         tags: ["Coffee", "Merchant"],
-        uni: "Michigan State University",
+        uni: "MSU",
         location: Location(latitude: 50, longitude: 50),
         hours: [Hour(day: .monday, openTime: "8:00 AM", closeTime: "6:00 PM")],
         description: "A local favorite for coffee lovers!",

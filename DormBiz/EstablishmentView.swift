@@ -25,6 +25,13 @@ struct EstablishmentView: View {
 
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
+                                    Text(establishment.uni)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.blue.opacity(0.2))
+                                        .foregroundColor(.blue)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
                                     ForEach(establishment.tags, id: \.self) { tag in
                                         Text(tag)
                                             .font(.caption)

@@ -69,9 +69,11 @@ struct EditEstablishmentView: View {
     }
     
     private func saveEstablishment() {
+        establishment.uni = selectedUniversity
         viewModel.saveEstablishment(establishment)
         dismiss()
     }
+
     
 //    private func deleteHour(_ hour: Hour) {
 //        if let index = establishment.hours.firstIndex(where: { $0.day == hour.day }) {

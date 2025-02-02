@@ -34,15 +34,19 @@ final class FirebaseService {
         // Note: the 'in' operator supports up to 10 values.
         let nameQuery = db.collection("establishments")
             .whereField("name", in: query)
+        let uniQuery = db.collection("establishments")
+            .whereField("uni", in: query)
         let tagQuery = db.collection("establishments")
             .whereField("tags", arrayContainsAny: query)
         
         // Execute both queries concurrently.
         async let nameSnapshot = nameQuery.getDocuments()
         async let tagSnapshot = tagQuery.getDocuments()
-        let (nameResult, tagResult) = try await (nameSnapshot, tagSnapshot)
+        async let uniSnapshot = uniQuery.getDocuments()
+        let (nameResult, tagResult, uniResult) = try await (nameSnapshot, tagSnapshot, uniSnapshot)
         
         let nameResults = nameResult.documents.compactMap { try? $0.data(as: Establishment.self) }
+        let uniResults = uniResult.documents.compactMap { try? $0.data(as: Establishment.self) }
         let tagResults = tagResult.documents.compactMap { try? $0.data(as: Establishment.self) }
         
         // Combine the two arrays, ensuring no duplicates (by comparing the id)
@@ -52,6 +56,7 @@ final class FirebaseService {
                 combined.append(establishment)
             }
         }
+
         return combined
     }
 }
