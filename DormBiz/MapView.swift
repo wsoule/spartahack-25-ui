@@ -9,52 +9,48 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
+import SwiftUI
+import MapKit
+
+import SwiftUI
+import MapKit
+
 struct MapView: View {
-    @State private var cameraPosition = MapCameraPosition.region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), // Default to London
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        )
+    @StateObject private var locationManager = LocationManager()
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), // Default to London
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    @State private var hasCenteredOnUser = false // Track if centered on user location
     @EnvironmentObject var viewModel: EstablishmentViewModel
     @State private var tags: [String] = []
 
-
-
-    let places = [
-        Place(name: "London", coordinate: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275)),
-        // Add more places as needed
-    ]
+    var places: [Place] {
+        return viewModel.establishments.map { Place(name: $0.location.name, coordinate: CLLocationCoordinate2D(latitude: $0.location.latitude, longitude: $0.location.longitude))}
+    }
 
     var body: some View {
-        TagSearch(tags: $tags, onSearch: { tags in
-            Task {
-                await viewModel.searchEstablishments(withTags: tags)
-            }
-        })
-
-        Map(position: $cameraPosition) {
-            ForEach(places) { place in
-                Annotation("anno", coordinate: place.coordinate) {
-                    PlaceAnnotationView(title: place.name)
-                }
+        Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: places) { place in
+            MapAnnotation(coordinate: place.coordinate) {
+                PlaceAnnotationView(title: place.name)
             }
         }
         .onAppear {
-            let locationManager = LocationManager { location in
-                cameraPosition = .region(
-                    MKCoordinateRegion(
-                        center: location.coordinate,
-                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                    )
-                )
-            }
             locationManager.requestLocation()
         }
-        .frame()
+        .onReceive(locationManager.$location) { location in
+            if let location = location, !hasCenteredOnUser {
+                region = MKCoordinateRegion(
+                    center: location.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                )
+                hasCenteredOnUser = true // Set flag to prevent re-centering
+            }
+        }
+        .frame(height: .infinity)
     }
 }
-
+ 
 
 struct Place: Identifiable {
     let id = UUID()
