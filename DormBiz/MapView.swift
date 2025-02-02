@@ -10,6 +10,7 @@ import MapKit
 import CoreLocation
 
 struct MapView: View {
+    @StateObject private var locationManager = LocationManager()
     @State private var region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), // Example: London coordinates
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -21,11 +22,14 @@ struct MapView: View {
         ]
 
         var body: some View {
-            Map(coordinateRegion: $region, annotationItems: places) { place in
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: places) { place in
                 MapAnnotation(coordinate: place.coordinate) {
                     PlaceAnnotationView(title: place.name)
                 }
             }
+             .onAppear {
+                 locationManager.requestLocation()
+             }
             .frame()
         }
 }

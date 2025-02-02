@@ -22,4 +22,3 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Handle errors
     }
 }
-
