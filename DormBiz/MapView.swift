@@ -30,24 +30,31 @@ struct MapView: View {
     }
 
     var body: some View {
-        Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: places) { place in
-            MapAnnotation(coordinate: place.coordinate) {
-                PlaceAnnotationView(title: place.name)
+        VStack{
+            TagSearch(tags: $tags, onSearch: { tags in
+                Task {
+                    await viewModel.searchEstablishments(withTags: tags)
+                }
+            })
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: places) { place in
+                MapAnnotation(coordinate: place.coordinate) {
+                    PlaceAnnotationView(title: place.name)
+                }
             }
-        }
-        .onAppear {
-            locationManager.requestLocation()
-        }
-        .onReceive(locationManager.$location) { location in
-            if let location = location, !hasCenteredOnUser {
-                region = MKCoordinateRegion(
-                    center: location.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                )
-                hasCenteredOnUser = true // Set flag to prevent re-centering
+            .onAppear {
+                locationManager.requestLocation()
             }
+            .onReceive(locationManager.$location) { location in
+                if let location = location, !hasCenteredOnUser {
+                    region = MKCoordinateRegion(
+                        center: location.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    )
+                    hasCenteredOnUser = true // Set flag to prevent re-centering
+                }
+            }
+            .frame(height: .infinity)
         }
-        .frame(height: .infinity)
     }
 }
  

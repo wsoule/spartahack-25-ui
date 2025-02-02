@@ -43,9 +43,6 @@ struct ContentView: View {
                         } label: {
                             Label("Sort", systemImage: "arrow.up.arrow.down")
                         }
-                        Button(action: createTodo) {
-                            Label("todo", systemImage: "minus")
-                        }
                     }
             }
             .onAppear {
