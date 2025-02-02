@@ -1,13 +1,11 @@
 import CoreLocation
-import SwiftUI
-import MapKit
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
-    @Binding var region: MKCoordinateRegion
+    private var locationHandler: ((CLLocation) -> Void)?
 
-    init(region: Binding<MKCoordinateRegion>) {
-        self._region = region
+    init(locationHandler: @escaping (CLLocation) -> Void) {
+        self.locationHandler = locationHandler
         super.init()
         manager.delegate = self
     }
@@ -18,12 +16,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        DispatchQueue.main.async {
-            self.region = MKCoordinateRegion(
-                center: location.coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-            )
+        if let location = locations.last {
+            locationHandler?(location)
+            manager.stopUpdatingLocation() // Stop updates to conserve battery
         }
     }
 

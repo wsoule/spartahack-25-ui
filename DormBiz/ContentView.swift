@@ -1,5 +1,15 @@
 import SwiftUI
 import SwiftData
+import FirebaseFirestore
+
+// Reference to Firestore
+let db = Firestore.firestore()
+
+struct Todo: Identifiable, Codable {
+    var id: String
+    var title: String
+    var completed: Bool
+}
 
 struct ContentView: View {
     @State private var path = [Establishment]()  // Navigation path tracking
@@ -7,54 +17,22 @@ struct ContentView: View {
     @State private var searchText: String = ""
     @State private var newTag: String = ""
     @State private var tags: [String] = []
-
-    @Environment(\.modelContext) private var modelContext
+    var title = ""
+    
+    // Use an EnvironmentObject to get the shared EstablishmentViewModel instance.
+    @EnvironmentObject var viewModel: EstablishmentViewModel
 
     var body: some View {
         NavigationStack(path: $path) {
-            VStack(alignment: .leading) {
-                // Input field and add button
-                HStack {
-                    TextField("Search by tag", text: $newTag)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                    
-                    Button("Add") {
-                        addTag()
-                    }
-                    .disabled(newTag.isEmpty)
-                }
-                .padding()
-
-                // Display tags
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(tags, id: \.self) { tag in
-                            HStack {
-                                Text(tag)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.blue.opacity(0.2))
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                Button(action: {
-                                    removeTag(tag)
-                                }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-
-                // Existing content
-                EstablishmentView(sort: sortOrder, searchString: searchText)
+            VStack {
+                TagSearch(tags: tags)
+                // Pass your fetched establishments to the EstablishmentView.
+                EstablishmentView(establishments: viewModel.establishments)
                     .navigationTitle("DormBiz")
-                    .navigationDestination(for: Establishment.self, destination: EditEstablishmentView.init)
+                    // This tells NavigationStack what view to show when an Establishment is tapped.
+                    .navigationDestination(for: Establishment.self) { establishment in
+                        EstablishmentDetailView(establishment: establishment)
+                    }
                     .toolbar {
                         Button(action: addSession) {
                             Label("Add session", systemImage: "plus")
@@ -64,28 +42,20 @@ struct ContentView: View {
                         } label: {
                             Label("Sort", systemImage: "arrow.up.arrow.down")
                         }
+                        Button(action: createTodo) {
+                            Label("todo", systemImage: "minus")
+                        }
                     }
+            }
+            .onAppear {
+                viewModel.fetchEstablishments()
             }
         }
     }
 
-    private func addTag() {
-        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTag.isEmpty, !tags.contains(trimmedTag) else { return }
-        tags.append(trimmedTag)
-        newTag = ""
-    }
-
-    private func removeTag(_ tag: String) {
-        tags.removeAll { $0 == tag }
-    }
-
-    private func addSession() {
+    private func createTodo() {
         let hour1 = Hour(day: .monday, openTime: "08:00 AM", closeTime: "05:00 PM")
         let hour2 = Hour(day: .tuesday, openTime: "08:00 AM", closeTime: "05:00 PM")
-
-        modelContext.insert(hour1)
-        modelContext.insert(hour2)
         
         let newEstablishment = Establishment(
             name: "",
@@ -95,15 +65,34 @@ struct ContentView: View {
             uni: "",
             location: Location(latitude: 0, longitude: 0),
             hours: [hour1, hour2],
-            desc: "",
+            description: "",
             type: .food
         )
-        modelContext.insert(newEstablishment)
+
+        viewModel.addEstablishment(newEstablishment)
+    }
+    
+    private func addSession() {
+        let hour1 = Hour(day: .monday, openTime: "08:00 AM", closeTime: "05:00 PM")
+        let hour2 = Hour(day: .tuesday, openTime: "08:00 AM", closeTime: "05:00 PM")
+        
+        let newEstablishment = Establishment(
+            name: "",
+            owners: [],
+            products: [],
+            tags: tags,  // Use the tags array here
+            uni: "",
+            location: Location(latitude: 0, longitude: 0),
+            hours: [hour1, hour2],
+            description: "",
+            type: .food
+        )
+        // Push the new establishment onto the navigation path.
         path = [newEstablishment]
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Establishment.self, inMemory: true)
+        .environmentObject(EstablishmentViewModel())
 }

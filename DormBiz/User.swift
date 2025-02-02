@@ -4,21 +4,32 @@
 //
 //  Created by Wyat Soule on 2/1/25.
 //
+//
+//import Foundation
+//import SwiftData
+//
+//@Model
+//final class User {
+//    var name: String
+//    var phoneNumber: String
+//    var email: String
+//    var establishments: [Establishment]?
+//    
+//    init(name: String, phoneNumber: String, email: String, establishments: [Establishment] = []){
+//        self.name = name
+//        self.phoneNumber = phoneNumber
+//        self.email = email
+//        self.establishments = establishments
+//    }
+//}
 
 import Foundation
-import SwiftData
+import FirebaseFirestore
 
-@Model
-final class User {
+struct User: Identifiable, Codable {
+    @DocumentID var id: String?
     var name: String
     var phoneNumber: String
     var email: String
-    var establishments: [Establishment]?
-    
-    init(name: String, phoneNumber: String, email: String, establishments: [Establishment] = []){
-        self.name = name
-        self.phoneNumber = phoneNumber
-        self.email = email
-        self.establishments = establishments
-    }
+    var establishmentIDs: [String]?
 }

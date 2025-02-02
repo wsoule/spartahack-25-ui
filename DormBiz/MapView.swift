@@ -10,29 +10,40 @@ import MapKit
 import CoreLocation
 
 struct MapView: View {
-    @StateObject private var locationManager = LocationManager()
-    @State private var region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), // Example: London coordinates
+    @State private var cameraPosition = MapCameraPosition.region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275), // Default to London
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         )
+    )
 
-        let places = [
-            Place(name: "London", coordinate: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275)),
-            // Add more places as needed
-        ]
+    let places = [
+        Place(name: "London", coordinate: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275)),
+        // Add more places as needed
+    ]
 
-        var body: some View {
-            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: places) { place in
-                MapAnnotation(coordinate: place.coordinate) {
+    var body: some View {
+        TagSearch()
+        Map(position: $cameraPosition) {
+            ForEach(places) { place in
+                Annotation("anno", coordinate: place.coordinate) {
                     PlaceAnnotationView(title: place.name)
                 }
             }
-            .onAppear {
-                let locationManager = LocationManager(region: $region)
-                locationManager.requestLocation()
-            }
-            .frame()
         }
+        .onAppear {
+            let locationManager = LocationManager { location in
+                cameraPosition = .region(
+                    MKCoordinateRegion(
+                        center: location.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    )
+                )
+            }
+            locationManager.requestLocation()
+        }
+        .frame()
+    }
 }
 
 

@@ -4,17 +4,25 @@
 //
 //  Created by Wyat Soule on 2/1/25.
 //
+//
+//import Foundation
+//import SwiftData
+//
+//@Model
+//final class Location {
+//    var latitude: Double
+//    var longitude: Double
+//    
+//    init(latitude: Double, longitude: Double) {
+//        self.latitude = latitude
+//        self.longitude = longitude
+//    }
+//}
 
 import Foundation
-import SwiftData
+import FirebaseFirestore
 
-@Model
-final class Location {
+struct Location: Codable {
     var latitude: Double
     var longitude: Double
-    
-    init(latitude: Double, longitude: Double) {
-        self.latitude = latitude
-        self.longitude = longitude
-    }
 }

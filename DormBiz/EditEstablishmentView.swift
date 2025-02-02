@@ -3,13 +3,17 @@ import CoreLocation
 
 struct EditEstablishmentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+
     @State var establishment: Establishment
 
-    @StateObject private var locationManager = LocationManager() // ✅ Initialize inside view
     @State private var selectedType: TypeEstablishment = .food
     @State private var selectedUniversity: String = "MSU"
     @State private var newTag: String = ""
     @State private var showingTimePopup = false
+
+    // Use an existing view model provided by the environment.
+    @EnvironmentObject var viewModel: EstablishmentViewModel
 
     var body: some View {
         Form {
@@ -26,22 +30,33 @@ struct EditEstablishmentView: View {
                 removeTag: removeTag
             )
             UniversitySection(selectedUniversity: $selectedUniversity)
+            
+            // Save button at the bottom
+            Section {
+                Button(action: saveEstablishment) {
+                    Text("Save")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                }
+            }
         }
         .navigationTitle("New Establishment")
         .sheet(isPresented: $showingTimePopup) {
             AddTimePopupView(isPresented: $showingTimePopup, establishment: $establishment)
         }
     }
-
-    // MARK: - Update Location
-//    func updateLocation() {
-//        if let userCoordinates = locationManager.userLocation {
-//            establishment.location = Location(latitude: userCoordinates.latitude, longitude: userCoordinates.longitude)
-//        }
-//    }
+    
+    private func saveEstablishment() {
+        viewModel.addEstablishment(establishment)
+        dismiss()
+    }
+    
 //    // MARK: - Delete Hour Methods
 //    private func deleteHour(_ hour: Hour) {
-//        if let index = establishment.hours.firstIndex(where: { $0.id == hour.id }) {
+//        if let index = establishment.hours.firstIndex(where: { $0.day == hour.day }) {
 //            establishment.hours.remove(at: index)
 //        }
 //    }
@@ -49,8 +64,8 @@ struct EditEstablishmentView: View {
 //    private func deleteHours(at offsets: IndexSet) {
 //        establishment.hours.remove(atOffsets: offsets)
 //    }
-//
-//    // MARK: - Remove Tag
+//    
+//    // MARK: - Remove Tag Method
 //    private func removeTag(_ tag: String) {
 //        establishment.tags.removeAll { $0 == tag }
 //    }

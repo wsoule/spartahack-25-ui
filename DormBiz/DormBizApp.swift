@@ -24,6 +24,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct DormBizApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var establishmentViewModel = EstablishmentViewModel()
+
     
     // Track the user's authenticatino status
     @State private var isUserLoggedIn: Bool = false
@@ -49,6 +51,7 @@ struct DormBizApp: App {
             // Check if user is logged in on app launch
             if simulateLogin || isUserLoggedIn {
                 MainTabView()
+                    .environmentObject(establishmentViewModel)
                     .onAppear {
                         if !simulateLogin {
                             if Auth.auth().currentUser != nil {

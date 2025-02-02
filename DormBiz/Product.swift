@@ -1,22 +1,32 @@
+////
+////  Product.swift
+////  DormBiz
+////
+////  Created by Wyat Soule on 2/1/25.
+////
 //
-//  Product.swift
-//  DormBiz
+//import Foundation
+//import SwiftData
 //
-//  Created by Wyat Soule on 2/1/25.
-//
+//@Model
+//final class Product {
+//    var name: String
+//    var cost: Double
+//    var desc: String
+//    
+//    init(name: String, cost: Double, desc: String = "") {
+//        self.name = name
+//        self.cost = cost
+//        self.desc = desc
+//    }
+//}
 
 import Foundation
-import SwiftData
+import FirebaseFirestore
 
-@Model
-final class Product {
+struct Product: Identifiable, Codable {
+    @DocumentID var id: String?
     var name: String
     var cost: Double
-    var desc: String
-    
-    init(name: String, cost: Double, desc: String = "") {
-        self.name = name
-        self.cost = cost
-        self.desc = desc
-    }
+    var description: String
 }

@@ -14,7 +14,7 @@ struct EstablishmentDetailView: View {
                     Image(systemName: "building.fill") // default image
                         .font(.title)
                         .foregroundColor(.blue)
-                    Text(establishment.name)
+                    Text("hello")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                 }
@@ -44,7 +44,7 @@ struct EstablishmentDetailView: View {
                             .fontWeight(.semibold)
                     }
                     
-                    Text(establishment.desc)
+                    Text(establishment.description)
                         .font(.body)
                     
                     Text("Owners")
@@ -97,12 +97,12 @@ struct EstablishmentDetailView: View {
     EstablishmentDetailView(establishment: Establishment(
         name: "Chad's Café",
         owners: [User(name: "Chad Hildwein", phoneNumber: "+12317500042", email: "chad@example.com")],
-        products: [Product(name: "Coffee", cost: 3.99)],
+        products: [Product(name: "Coffee", cost: 3.99, description: "Hello")  ],
         tags: ["Coffee", "Merchant"],
         uni: "Michigan State University",
         location: Location(latitude: 50, longitude: 50),
         hours: [Hour(day: .monday, openTime: "8:00 AM", closeTime: "6:00 PM")],
-        desc: "A local favorite for coffee lovers!",
+        description: "A local favorite for coffee lovers!",
         type: .food
     ))
 }

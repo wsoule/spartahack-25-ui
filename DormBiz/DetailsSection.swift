@@ -14,7 +14,7 @@ struct DetailsSection: View {
     var body: some View {
         Section(header: Text("Details")) {
             TextField("Name", text: $establishment.name)
-            TextField("Description", text: $establishment.desc)
+            TextField("Description", text: $establishment.description)
             Picker("Type", selection: $selectedType) {
                 ForEach(TypeEstablishment.allCases, id: \.self) { type in
                     Text(type.rawValue).tag(type)
