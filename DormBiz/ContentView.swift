@@ -33,17 +33,21 @@ struct ContentView: View {
 
                 // Pass your fetched establishments to the EstablishmentView.
                 EstablishmentView(establishments: viewModel.establishments)
-                    .navigationTitle("DormBiz")
-                    .toolbar {
-                        Button(action: addSession) {
-                            Label("Add session", systemImage: "plus")
-                        }
-                        Menu {
-                            // Sorting options can be added here
-                        } label: {
-                            Label("Sort", systemImage: "arrow.up.arrow.down")
-                        }
-                    }
+                    .toolbar { // Remove the default navigationTitle and add a custom toolbar
+                                            // This toolbar item replaces the title with a custom view.
+                        ToolbarItem(placement: .topBarLeading) {
+                                                    Image("logo") // Make sure "logo" matches your asset name.
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                        .frame(height: 40)
+                                            }
+                                            // The Add Session button on the trailing side.
+                                            ToolbarItem(placement: .navigationBarTrailing) {
+                                                Button(action: addSession) {
+                                                    Label("Add session", systemImage: "plus")
+                                                }
+                                            }
+                                        }
             }
             .onAppear {
                 Task {
