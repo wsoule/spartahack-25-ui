@@ -26,7 +26,6 @@ struct EditEstablishmentView: View {
                 removeTag: removeTag
             )
             UniversitySection(selectedUniversity: $selectedUniversity)
-            LocationSection(establishment: $establishment, locationManager: locationManager)
         }
         .navigationTitle("New Establishment")
         .sheet(isPresented: $showingTimePopup) {
@@ -35,11 +34,11 @@ struct EditEstablishmentView: View {
     }
 
     // MARK: - Update Location
-    func updateLocation() {
-        if let userCoordinates = locationManager.userLocation {
-            establishment.location = Location(latitude: userCoordinates.latitude, longitude: userCoordinates.longitude)
-        }
-    }
+//    func updateLocation() {
+//        if let userCoordinates = locationManager.userLocation {
+//            establishment.location = Location(latitude: userCoordinates.latitude, longitude: userCoordinates.longitude)
+//        }
+//    }
 //    // MARK: - Delete Hour Methods
 //    private func deleteHour(_ hour: Hour) {
 //        if let index = establishment.hours.firstIndex(where: { $0.id == hour.id }) {
