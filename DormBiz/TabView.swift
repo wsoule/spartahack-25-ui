@@ -40,17 +40,13 @@ struct HomeView: View {
 
 struct SearchView: View {
     var body: some View {
-        Text("Search Screen")
-            .font(.largeTitle)
-            .padding()
+        MapView()
     }
 }
 
 struct ProfileView: View {
     var body: some View {
-        Text("Profile Screen")
-            .font(.largeTitle)
-            .padding()
+        UserView()
     }
 }
 
