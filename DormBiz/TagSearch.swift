@@ -1,16 +1,12 @@
-//
-//  TagSearch.swift
-//  DormBiz
-//
-//  Created by Wyat Soule on 2/1/25.
-//
-
 import SwiftUI
 
 struct TagSearch: View {
-    @State var newTag: String = ""
-    @State var tags: [String] = []
-
+    // Bind the tags array from the parent.
+    @Binding var tags: [String]
+    @State private var newTag: String = ""
+    
+    // Closure to trigger search with the full tags array.
+    var onSearch: (([String]) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -53,18 +49,25 @@ struct TagSearch: View {
             .padding(.horizontal)
         }
     }
+    
     private func addTag() {
         let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTag.isEmpty, !tags.contains(trimmedTag) else { return }
         tags.append(trimmedTag)
         newTag = ""
+        // Trigger search using all tags.
+        onSearch?(tags)
     }
 
     private func removeTag(_ tag: String) {
         tags.removeAll { $0 == tag }
+        // Trigger search using all tags.
+        onSearch?(tags)
     }
 }
 
 #Preview {
-    TagSearch(tags: ["hello"])
+    TagSearch(tags: .constant(["hello"]), onSearch: { tags in
+        print("Search with tags: \(tags)")
+    })
 }

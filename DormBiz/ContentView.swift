@@ -25,7 +25,12 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
-                TagSearch(tags: tags)
+                TagSearch(tags: $tags, onSearch: { tags in
+                    Task {
+                        await viewModel.searchEstablishments(withTags: tags)
+                    }
+                })
+
                 // Pass your fetched establishments to the EstablishmentView.
                 EstablishmentView(establishments: viewModel.establishments)
                     .navigationTitle("DormBiz")

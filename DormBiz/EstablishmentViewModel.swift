@@ -5,29 +5,20 @@ final class EstablishmentViewModel: ObservableObject {
     @Published var establishments: [Establishment] = []
     private let firebaseService = FirebaseService()
     
-    // Assume you inject your SwiftData modelContext somehow (e.g., via environment)
-    @Environment(\.modelContext) private var modelContext
-
-    // Fetch from Firestore and update local SwiftData storage
+    // Fetch from Firestore and update local list.
     func syncFromCloud() async {
         do {
             let remoteEstablishments = try await firebaseService.fetchEstablishments()
             DispatchQueue.main.async {
-                // Update your local establishments list (and optionally, your local SwiftData store)
                 self.establishments = remoteEstablishments
-                // You could also insert these into the SwiftData context if desired.
             }
         } catch {
             print("Error fetching from Firestore: \(error)")
         }
     }
     
-    // Save a local establishment to both SwiftData and Firestore
+    // Save an establishment.
     func saveEstablishment(_ establishment: Establishment) {
-        // First, update SwiftData locally
-        // (For example, use modelContext.insert if it's new, or simply assume the SwiftData store is already updated.)
-        
-        // Then push to Firestore asynchronously.
         Task {
             do {
                 try await firebaseService.saveEstablishment(establishment)
@@ -35,6 +26,18 @@ final class EstablishmentViewModel: ObservableObject {
             } catch {
                 print("Error saving establishment: \(error)")
             }
+        }
+    }
+    
+    // Search for establishments by tags.
+    func searchEstablishments(withTags tags: [String]) async {
+        do {
+            let results = try await firebaseService.searchEstablishments(query:  tags)
+            DispatchQueue.main.async {
+                self.establishments = results
+            }
+        } catch {
+            print("Error searching establishments: \(error)")
         }
     }
 }

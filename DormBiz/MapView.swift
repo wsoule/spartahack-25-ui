@@ -16,6 +16,10 @@ struct MapView: View {
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         )
     )
+    @EnvironmentObject var viewModel: EstablishmentViewModel
+    @State private var tags: [String] = []
+
+
 
     let places = [
         Place(name: "London", coordinate: CLLocationCoordinate2D(latitude: 51.507222, longitude: -0.1275)),
@@ -23,7 +27,12 @@ struct MapView: View {
     ]
 
     var body: some View {
-        TagSearch()
+        TagSearch(tags: $tags, onSearch: { tags in
+            Task {
+                await viewModel.searchEstablishments(withTags: tags)
+            }
+        })
+
         Map(position: $cameraPosition) {
             ForEach(places) { place in
                 Annotation("anno", coordinate: place.coordinate) {

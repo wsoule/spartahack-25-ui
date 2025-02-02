@@ -1,12 +1,4 @@
-//
-//  FirebaseService.swift
-//  DormBiz
-//
-//  Created by Wyat Soule on 2/1/25.
-//
-
 import Foundation
-
 import FirebaseFirestore
 
 final class FirebaseService {
@@ -28,5 +20,38 @@ final class FirebaseService {
         } else {
             _ = try await db.collection("establishments").addDocument(from: establishment)
         }
+    }
+    
+    // Search for establishments by an array of query terms.
+    // It returns documents where the "name" is in the query array or where "tags" contains any query term.
+    func searchEstablishments(query: [String]) async throws -> [Establishment] {
+        // If no queries are provided, return all establishments.
+        if query.isEmpty {
+            return try await fetchEstablishments()
+        }
+        
+        // Firestore 'in' operator for name (exact match) and 'arrayContainsAny' for tags.
+        // Note: the 'in' operator supports up to 10 values.
+        let nameQuery = db.collection("establishments")
+            .whereField("name", in: query)
+        let tagQuery = db.collection("establishments")
+            .whereField("tags", arrayContainsAny: query)
+        
+        // Execute both queries concurrently.
+        async let nameSnapshot = nameQuery.getDocuments()
+        async let tagSnapshot = tagQuery.getDocuments()
+        let (nameResult, tagResult) = try await (nameSnapshot, tagSnapshot)
+        
+        let nameResults = nameResult.documents.compactMap { try? $0.data(as: Establishment.self) }
+        let tagResults = tagResult.documents.compactMap { try? $0.data(as: Establishment.self) }
+        
+        // Combine the two arrays, ensuring no duplicates (by comparing the id)
+        var combined = nameResults
+        for establishment in tagResults {
+            if !combined.contains(where: { $0.id == establishment.id }) {
+                combined.append(establishment)
+            }
+        }
+        return combined
     }
 }
