@@ -7,9 +7,27 @@
 
 import SwiftUI
 import SwiftData
+import Firebase
+import FirebaseCore
+import FirebaseAuth
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        
+        return true
+    }
+    
+}
 
 @main
 struct DormBizApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    // Track the user's authenticatino status
+    @State private var isUserLoggedIn: Bool = false
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -25,7 +43,20 @@ struct DormBizApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            // Check if user is logged in on app launch
+            if isUserLoggedIn {
+                ContentView()
+                    .onAppear {
+                        if Auth.auth().currentUser != nil {
+                            isUserLoggedIn = true
+                        } else {
+                            isUserLoggedIn = false
+                        }
+                    }
+            } else {
+                LoginView(isLoggedIn: $isUserLoggedIn)
+            }
+            
         }
         .modelContainer(sharedModelContainer)
     }
