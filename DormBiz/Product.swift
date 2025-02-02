@@ -25,7 +25,7 @@ import Foundation
 import FirebaseFirestore
 
 struct Product: Identifiable, Codable {
-    @DocumentID var id: String?
+    var id: String = UUID().uuidString
     var name: String
     var cost: Double
     var description: String

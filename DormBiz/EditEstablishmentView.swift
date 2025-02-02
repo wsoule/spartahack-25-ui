@@ -17,7 +17,9 @@ struct EditEstablishmentView: View {
     // New state for map search.
     @State private var mapSearchQuery: String = ""
     @State private var searchResults: [MKMapItem] = []
+    @State private var isPresentingAddProduct = false
 
+    
     // Use an existing view model provided by the environment.
     @EnvironmentObject var viewModel: EstablishmentViewModel
 
@@ -54,6 +56,31 @@ struct EditEstablishmentView: View {
                 removeTag: removeTag
             )
             UniversitySection(selectedUniversity: $selectedUniversity)
+            Section(header: Text("Products")) {
+                            // Button to add a new product
+                            Button(action: {
+                                isPresentingAddProduct = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                    Text("Add Product")
+                                }
+                            }
+                            .buttonStyle(BorderlessButtonStyle()) // Ensures only the button is tappable
+
+                            // List of added products
+                            ForEach(establishment.products) { product in
+                                VStack(alignment: .leading) {
+                                    Text(product.name)
+                                        .font(.headline)
+                                    Text(product.description)
+                                        .font(.subheadline)
+                                    Text(product.cost, format: .currency(code: "USD"))
+                                        .font(.subheadline)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
             
             // Section for Apple Maps search.
             Section(header: Text("Location Search")) {
@@ -96,6 +123,10 @@ struct EditEstablishmentView: View {
                 }
             }
         }
+       
+                .sheet(isPresented: $isPresentingAddProduct) {
+                    AddProductView(establishment: establishmentBinding)
+                }
         .navigationTitle("New Establishment")
         .sheet(isPresented: $showingTimePopup) {
             AddTimePopupView(isPresented: $showingTimePopup, establishment: establishmentBinding)
