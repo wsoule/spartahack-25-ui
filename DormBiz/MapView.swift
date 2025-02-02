@@ -27,9 +27,10 @@ struct MapView: View {
                     PlaceAnnotationView(title: place.name)
                 }
             }
-             .onAppear {
-                 locationManager.requestLocation()
-             }
+            .onAppear {
+                let locationManager = LocationManager(region: $region)
+                locationManager.requestLocation()
+            }
             .frame()
         }
 }
