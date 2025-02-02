@@ -28,6 +28,9 @@ struct DormBizApp: App {
     // Track the user's authenticatino status
     @State private var isUserLoggedIn: Bool = false
     
+    // Toggle for simulating login
+    private var simulateLogin: Bool = true
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -44,13 +47,17 @@ struct DormBizApp: App {
     var body: some Scene {
         WindowGroup {
             // Check if user is logged in on app launch
-            if isUserLoggedIn {
-                ContentView()
+            if simulateLogin || isUserLoggedIn {
+                MainTabView()
                     .onAppear {
-                        if Auth.auth().currentUser != nil {
-                            isUserLoggedIn = true
+                        if !simulateLogin {
+                            if Auth.auth().currentUser != nil {
+                                isUserLoggedIn = true
+                            } else {
+                                isUserLoggedIn = false
+                            }
                         } else {
-                            isUserLoggedIn = false
+                            isUserLoggedIn = true
                         }
                     }
             } else {
