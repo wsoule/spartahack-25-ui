@@ -12,6 +12,7 @@
 		E92491E82D4EF43C00A77810 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = E92491E72D4EF43C00A77810 /* FirebaseFirestore */; };
 		E92491EA2D4EF43C00A77810 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = E92491E92D4EF43C00A77810 /* FirebaseMessaging */; };
 		E92491EC2D4EF43C00A77810 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = E92491EB2D4EF43C00A77810 /* FirebaseStorage */; };
+		F8AEFDB52D4EF79A00F30602 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F8AEFDB42D4EF79A00F30602 /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 			files = (
 				E92491EA2D4EF43C00A77810 /* FirebaseMessaging in Frameworks */,
 				E92491E62D4EF43C00A77810 /* FirebaseDatabase in Frameworks */,
+				F8AEFDB52D4EF79A00F30602 /* FirebaseAnalytics in Frameworks */,
 				E92491E42D4EF43C00A77810 /* FirebaseAuth in Frameworks */,
 				E92491EC2D4EF43C00A77810 /* FirebaseStorage in Frameworks */,
 				E92491E82D4EF43C00A77810 /* FirebaseFirestore in Frameworks */,
@@ -130,6 +132,7 @@
 				E92491E72D4EF43C00A77810 /* FirebaseFirestore */,
 				E92491E92D4EF43C00A77810 /* FirebaseMessaging */,
 				E92491EB2D4EF43C00A77810 /* FirebaseStorage */,
+				F8AEFDB42D4EF79A00F30602 /* FirebaseAnalytics */,
 			);
 			productName = DormBiz;
 			productReference = F8CE79292D4E8BBB009BEC86 /* DormBiz.app */;
@@ -420,6 +423,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Need it";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app requires access to your location to provide map functionalities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,6 +454,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Need it";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app requires access to your location to provide map functionalities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -612,6 +619,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E92491E22D4EF43C00A77810 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		F8AEFDB42D4EF79A00F30602 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E92491E22D4EF43C00A77810 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
